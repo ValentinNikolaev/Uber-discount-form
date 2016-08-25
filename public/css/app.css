@@ -1,0 +1,4 @@
+.grid-loading {
+    opacity: 0.5;
+    background: #ffffff url('../img/loading.gif') center center no-repeat !important;
+}

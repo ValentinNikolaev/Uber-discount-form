@@ -1,6 +1,20 @@
 {% extends "base.html.twig" %}
-{% block title %}Home page{% endblock %}
 {% block container %}
-        <h1>Form home page</h1>
-        <p>Here will be form</p>
+    <h1>Find route</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <form id="find_form">
+                <div class="form-group">
+                    <label for="start_location">Start location</label>
+                    <input type="text" class="form-control" id="start_location" placeholder="Start location">
+                </div>
+                <div class="form-group">
+                    <label for="end_location">End location</label>
+                    <input type="text" class="form-control" id="end_location" placeholder="End location">
+                </div>
+                <button type="submit" class="btn btn-default">Find</button>
+            </form>
+        </div>
+    </div>
+
 {% endblock %}
