@@ -1,0 +1,10 @@
+/build
+/vendor
+composer.phar
+composer.lock
+.DS_Store
+.idea/
+.settings/org.eclipse.php.core.prefs
+.buildpath
+.settings
+.project
