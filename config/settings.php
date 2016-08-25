@@ -2,6 +2,7 @@
 
 return [
     'settings' => [
+        'after_prefix' => 'After',
         'discount' => 0.2,
         // Slim Settings
         'determineRouteBeforeAppMiddleware' => true,

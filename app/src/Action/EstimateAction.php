@@ -114,21 +114,17 @@ class EstimateAction extends BaseAction
             $preparedEstimates = [];
 
             foreach ($estimates->prices as $price) {
+                $minValue = $price->low_estimate;
                 $formatted = preg_replace('/[^a-zA-Z0-9-.]/', '', $price->estimate);
-                if (strpos($formatted, "-") !== false) {
-                    $formattedArray = array_filter(explode("-", $formatted));
-                    foreach ($formattedArray as &$formattedPart) {
-                        $formattedPart = $this->applyDiscount($formattedPart);
-                    }
-                    $estimateWithDiscount = implode($formattedArray, "-");
-                    $minValue = min($formattedArray);
+
+                if ($price->low_estimate === $price->high_estimate) {
+                    $estimateWithDiscount = $this->applyDiscount($price->low_estimate);
                 } else {
-                    $estimateWithDiscount = $this->applyDiscount($formatted);
-                    $minValue = $estimateWithDiscount;
+                    $estimateWithDiscount = $this->applyDiscount($price->low_estimate)."-". $this->applyDiscount($price->high_estimate);
                 }
 
                 $preparedEstimates[$minValue . "_" . mt_rand(0, 200)] = [
-                    'display_name' => $price->display_name,
+                    'display_name' => $this->settings['after_prefix'].$price->display_name,
                     'estimate_with_discount' => $estimateWithDiscount,
                     'estimate_formatted' => $formatted,
                     'currency_code' => $price->currency_code,
