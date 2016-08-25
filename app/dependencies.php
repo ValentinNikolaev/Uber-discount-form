@@ -34,5 +34,9 @@ $container['logger'] = function ($c) {
 // Action factories
 // -----------------------------------------------------------------------------
 $container[App\Action\HomeAction::class] = function ($c) {
-    return new App\Action\HomeAction($c->get('view'), $c->get('logger'));
+    return new App\Action\HomeAction($c->get('view'), $c->get('logger'), $c);
+};
+
+$container[App\Action\EstimateAction::class] = function ($c) {
+    return new App\Action\EstimateAction($c->get('view'), $c->get('logger'), $c);
 };

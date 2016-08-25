@@ -8,19 +8,90 @@ use Slim\Views\Twig;
 
 final class EstimateAction
 {
-    private $view;
+    private $queryParams = ['start_location', 'end_location'];
+    private $geoLocation = ['lng', 'lat'];
+
     private $logger;
 
-    public function __construct(Twig $view, LoggerInterface $logger)
+    public function __construct(Twig $view, LoggerInterface $logger, $app)
     {
-        $this->view = $view;
         $this->logger = $logger;
+        $this->view = $view;
     }
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $this->logger->info("Estimate action dispatched");
-        $this->view->render($response, 'home.twig');
+        $params = $request->getQueryParams();
+        $this->prepareParams($params);
+        $validate = $this->validateParams($params);
+
+        if ($validate['status']) {
+            $this->processRequest($params, $request, $response);
+        } else {
+            $this->simpleMessage($validate['message'], $response);
+        }
+
+        $this->logger->info("Estimate action dispatched. Params: " . json_encode($params));
         return $response;
     }
+
+    /**
+     * preventive params preparing
+     * @param array $params
+     */
+    private function prepareParams(&$params = [])
+    {
+        if ($params) {
+            foreach ($params as &$param) {
+                $param = floatval($param);
+            }
+        }
+    }
+
+    /**
+     * @todo should be moved to separate class
+     * @param array $params
+     * @return array
+     */
+    private function validateParams($params = [])
+    {
+        if ($params) {
+
+            foreach ($this->queryParams as $queryParam) {
+                foreach ($this->geoLocation as $suffix) {
+                    $lookupKey = $queryParam . "_" . $suffix;
+                    if (empty($lookupKey)) {
+                        return [
+                            'status' => false,
+                            'message' => 'Value ' . $lookupKey . ' missing or wrong',
+                        ];
+                    }
+                }
+            }
+
+            return [
+                'status' => true,
+            ];
+        } else {
+            return [
+                'status' => false,
+                'message' => 'Missing params',
+            ];
+        }
+    }
+
+    private function processRequest($params, Request $request, Response $response)
+    {
+
+    }
+
+    /**
+     * @param $message
+     * @param $response
+     */
+    private function simpleMessage($message, Response &$response)
+    {
+        $this->view->render($response, 'message.twig', ['message' => $message]);
+    }
+
 }

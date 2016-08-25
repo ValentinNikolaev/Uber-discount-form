@@ -22,5 +22,7 @@ return [
             'name' => 'AfterUberApp',
             'path' => __DIR__ . '/../log/app.log',
         ],
+        'google' => [
+            'api_key' => 'AIzaSyCKwSlnPqXQZvXL5LKaQrZKI0FxJl7D9l8']
     ],
 ];
