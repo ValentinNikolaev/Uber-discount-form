@@ -62,7 +62,7 @@ class EstimateAction extends BaseAction
         if ($params) {
 
             foreach ($params as $key => $queryParam) {
-                if (empty($queryParam)) {
+                if (isset($this->queryParams[$key]) && empty($queryParam)) {
                     $message = 'Value ' . $key . ' missing or empty';
                     $this->logger->warning($message . " Params:" . json_decode($params));
                     return [
