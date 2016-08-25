@@ -1,23 +1,13 @@
 <?php
 namespace App\Action;
 
-use Psr\Log\LoggerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Views\Twig;
 
-final class EstimateAction
+class EstimateAction extends BaseAction
 {
     private $queryParams = ['start_location', 'end_location'];
     private $geoLocation = ['lng', 'lat'];
-
-    private $logger;
-
-    public function __construct(Twig $view, LoggerInterface $logger, $app)
-    {
-        $this->logger = $logger;
-        $this->view = $view;
-    }
 
     public function __invoke(Request $request, Response $response, $args)
     {
