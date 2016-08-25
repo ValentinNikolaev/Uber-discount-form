@@ -1,0 +1,19 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Our Estimate<br> include disc. {{ discount }}</th>
+            <th>Uber Estimate</th>
+            <th>Currency</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in estimates %}
+        <tr>
+            {% for key, column in row %}
+                <td class="{{ key }}">{{ column }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

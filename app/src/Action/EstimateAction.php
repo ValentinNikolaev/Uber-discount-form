@@ -1,20 +1,34 @@
 <?php
 namespace App\Action;
 
+use App\Api\Client;
+use App\Api\Exception;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class EstimateAction extends BaseAction
 {
-    private $queryParams = ['start_location', 'end_location'];
-    private $geoLocation = ['lng', 'lat'];
+    private $queryParams = ['start_location_lng', 'start_location_lat', 'end_location_lng', 'end_location_lat'];
+
+    private $mappingParams = [
+        'start_latitude' => 'start_location_lat',
+        'start_longitude' => 'start_location_lng',
+        'end_latitude' => 'end_location_lng',
+        'end_longitude' => 'end_location_lat'
+    ];
+
+    private $emptyEstimateRequest = [
+        'start_latitude' => '0',
+        'start_longitude' => '0',
+        'end_latitude' => '0',
+        'end_longitude' => '0'
+    ];
 
     public function __invoke(Request $request, Response $response, $args)
     {
         $params = $request->getQueryParams();
         $this->prepareParams($params);
         $validate = $this->validateParams($params);
-
         if ($validate['status']) {
             $this->processRequest($params, $request, $response);
         } else {
@@ -47,15 +61,14 @@ class EstimateAction extends BaseAction
     {
         if ($params) {
 
-            foreach ($this->queryParams as $queryParam) {
-                foreach ($this->geoLocation as $suffix) {
-                    $lookupKey = $queryParam . "_" . $suffix;
-                    if (empty($lookupKey)) {
-                        return [
-                            'status' => false,
-                            'message' => 'Value ' . $lookupKey . ' missing or wrong',
-                        ];
-                    }
+            foreach ($params as $key => $queryParam) {
+                if (empty($queryParam)) {
+                    $message = 'Value ' . $key . ' missing or empty';
+                    $this->logger->warning($message . " Params:" . json_decode($params));
+                    return [
+                        'status' => false,
+                        'message' => 'Value ' . $key . ' missing or empty',
+                    ];
                 }
             }
 
@@ -63,16 +76,87 @@ class EstimateAction extends BaseAction
                 'status' => true,
             ];
         } else {
+            $message = 'Missing params';
+            $this->logger->warning($message . " Params:" . json_decode($params));
             return [
                 'status' => false,
-                'message' => 'Missing params',
+                'message' => $message,
             ];
         }
     }
 
+    /**
+     * @param $params
+     * @param Request $request
+     * @param Response $response
+     */
     private function processRequest($params, Request $request, Response $response)
     {
 
+        try {
+
+            $client = new Client([
+                'server_token' => $this->settings['uber']['server_token'],
+                'use_sandbox' => true, // optional, default false
+                'version' => 'v1', // optional, default 'v1'
+                'locale' => 'en_US', // optional, default 'en_US'
+            ]);
+
+            $estimateRequest = $this->emptyEstimateRequest;
+            foreach ($this->mappingParams as $clientKey => $paramKey) {
+                $estimateRequest[$clientKey] = $params[$paramKey];
+            }
+
+            $estimates = $client->getPriceEstimates($estimateRequest);
+            $this->logger->info("Request: " . json_encode($estimateRequest));
+            $this->logger->info("Estimates found: " . json_encode($estimates));
+
+            $preparedEstimates = [];
+
+            foreach ($estimates->prices as $price) {
+                $formatted = preg_replace('/[^a-zA-Z0-9-.]/', '', $price->estimate);
+                if (strpos($formatted, "-") !== false) {
+                    $formattedArray = array_filter(explode("-", $formatted));
+                    foreach ($formattedArray as &$formattedPart) {
+                        $formattedPart = $this->applyDiscount($formattedPart);
+                    }
+                    $estimateWithDiscount = implode($formattedArray, "-");
+                    $minValue = min($formattedArray);
+                } else {
+                    $estimateWithDiscount = $this->applyDiscount($formatted);
+                    $minValue = $estimateWithDiscount;
+                }
+
+                $preparedEstimates[$minValue . "_" . mt_rand(0, 200)] = [
+                    'display_name' => $price->display_name,
+                    'estimate_with_discount' => $estimateWithDiscount,
+                    'estimate_formatted' => $formatted,
+                    'currency_code' => $price->currency_code,
+                ];
+            }
+            ksort($preparedEstimates);
+
+            if (!$preparedEstimates) {
+                $this->simpleMessage('Sorry! Nothing found.', $response);
+            } else {
+                $this->view->render($response, 'estimates.twig',
+                    ['estimates' => $preparedEstimates, 'discount' => ($this->settings['discount'] * 100) . " %"]);
+            }
+
+
+        } catch (Exception $e) {
+            $this->logger->debug($e->getMessage());
+            $this->simpleMessage($e->getMessage(), $response);
+        }
+    }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    private function applyDiscount($value)
+    {
+        return is_numeric($value) ? $value * (1 - $this->settings['discount']) : $value;
     }
 
     /**

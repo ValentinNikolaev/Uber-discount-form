@@ -2,6 +2,7 @@
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException as HttpClientException;
+use stdClass;
 
 class Client
 {

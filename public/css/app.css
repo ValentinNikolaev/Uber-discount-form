@@ -1,9 +1,25 @@
 .grid-loading {
     opacity: 0.5;
     background: #ffffff url('../img/loading.gif') center center no-repeat !important;
+
 }
 
 .bg-info {
     padding: 15px;
     background-color: #d9edf7;
+}
+
+.row{
+    margin-top: 30px;
+    margin-bottom: 30px
+}
+
+.estimate_with_discount {
+    font-weight: bold;
+    color: green;
+}
+
+.estimate_formatted {
+    text-decoration: line-through;
+    color: red;
 }

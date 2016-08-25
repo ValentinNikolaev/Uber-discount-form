@@ -2,6 +2,7 @@
 
 return [
     'settings' => [
+        'discount' => 0.2,
         // Slim Settings
         'determineRouteBeforeAppMiddleware' => true,
         'displayErrorDetails' => true,

@@ -8,7 +8,6 @@ class HomeAction extends  BaseAction
 {
     public function __invoke(Request $request, Response $response, $args)
     {
-        $this->logger->info("Home page action dispatched");
         $this->view->render($response, 'home.twig', ['api_key' =>  $this->settings['google']['api_key']]);
         return $response;
     }
