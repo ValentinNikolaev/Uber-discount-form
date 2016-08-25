@@ -1,2 +1,3 @@
-# Uber-discount-form
-Black rock test
+* composer install
+* chmod 777 -R log/
+* chmod 777 -R cache/ 

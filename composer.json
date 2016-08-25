@@ -1,0 +1,41 @@
+{
+    "name": "vnikolaev/AfterUber-php",
+    "description": "A php client for consuming the partial Uber API. ",
+    "version": "1.0.0",
+    "homepage" : "https://github.com/ValentinNikolaev/Uber-discount-form",
+    "authors" : [
+        {
+            "name" : "Valentin Nikolaev",
+            "email" : "valenti.nikolaev@gmail.com",
+            "role" : "Developer"
+        }
+    ],
+    "keywords": [
+        "api",
+        "oauth2",
+        "uber",
+        "php",
+        "discount"
+    ],
+    "license": "free",
+    "require": {
+        "php": ">=5.5.0",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "require-dev": {
+        "components/bootstrap" : "3.*",
+        "components/jquery": "~3.0",
+        "bassjobsen/bootstrap-3-typeahead": "~3.0",
+        "slim/slim": "^3.0",
+        "slim/twig-view": "^2.0",
+        "slim/flash": "^0.1.0",
+        "monolog/monolog": "^1.13",
+        "twig/twig": "1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\" : "app/src"
+        }
+    },
+    "minimum-stability": "stable"
+}
