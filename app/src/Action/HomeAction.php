@@ -6,10 +6,6 @@ use Slim\Http\Response;
 
 class HomeAction extends  BaseAction
 {
-    private $view;
-    private $logger;
-    private $settings = [];
-
     public function __invoke(Request $request, Response $response, $args)
     {
         $this->logger->info("Home page action dispatched");
