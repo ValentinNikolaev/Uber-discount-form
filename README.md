@@ -1,4 +1,4 @@
-AfterUbercart form
+AfterUber form
 ============
 This is form for Uber taxi to get estimate price for a trip with some discount. Discount can be set from configuration.
 
