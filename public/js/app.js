@@ -4,8 +4,7 @@ $(document)
         var form = $("#find_form");
         var ids = ['start_location', 'end_location'];
         var geo_location = ['lng', 'lat'];
-
-
+        
         /**
          * Some initialize
          */
@@ -30,10 +29,8 @@ $(document)
 
             google.maps.event.addListener(autocomplete[id], 'place_changed', function () {
                 var place = autocomplete[id].getPlace();
-                console.log(place);
                 $.each(['lng', 'lat'], function (key, value) {
                     var inputName = id + '_' + value;
-                    console.log(inputName);
                     var input = $("[name=" + inputName + "]");
                     if (input.length > 0) {
                         var placeValue = place.geometry.location[value];
